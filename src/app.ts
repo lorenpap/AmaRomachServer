@@ -1,14 +1,14 @@
 import * as Koa from "Koa";
-import {connectionString, port} from "../config/config";
 import * as mongoose from 'mongoose';
 import router from "./route";
 import * as bodyParser from 'koa-bodyparser';
 import * as respond from 'koa-respond';
 import {logger} from "../config/logger";
+import * as config from '../config/index';
 
 const app = new Koa();
 
-mongoose.connect(connectionString, {
+mongoose.connect(config.default.get('db:connectionString'), {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false
@@ -18,7 +18,7 @@ mongoose.connect(connectionString, {
 });
 
 app.use(respond()).use(bodyParser()).use(router.routes());
-app.listen(port, () => console.log(`✅  The server is running at http://localhost:${port}/`)
+app.listen(config.default.get('app:port'), () => console.log(`✅  The server is running at http://localhost:${config.default.get('app:port')}/`)
 );
 
 export default app;

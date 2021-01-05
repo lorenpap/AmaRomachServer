@@ -73,3 +73,24 @@
 {"level":"info","message":"successfully connected to db"}
 {"level":"info","message":"successfully connected to db"}
 {"level":"info","message":"update product{\n  _id: 5ff312386c343e3ad427f0e8,\n  name: 'alon',\n  price: 3,\n  amount: 10,\n  description: 'something'\n}"}
+{"level":"error","message":"failed connecting to db"}
+{"level":"error","message":"failed connecting to db"}
+{"level":"error","message":"failed connecting to db"}
+{"level":"error","message":"failed connecting to db"}
+{"level":"info","message":"successfully connected to db"}
+{"level":"info","message":"successfully connected to db"}
+{"level":"info","message":"successfully connected to db"}
+{"level":"info","message":"successfully connected to db"}
+{"level":"info","message":"successfully connected to db"}
+{"level":"error","message":"failed connecting to db"}
+{"level":"error","message":"failed connecting to db"}
+{"level":"error","message":"failed connecting to db"}
+{"level":"info","message":"successfully connected to db"}
+{"level":"info","message":"successfully connected to db"}
+{"level":"info","message":"successfully connected to db"}
+{"level":"info","message":"successfully connected to db"}
+{"level":"info","message":"successfully connected to db"}
+{"level":"info","message":"delete product{\n  _id: 5ff312386c343e3ad427f0e8,\n  name: 'alon',\n  price: 3,\n  amount: 10,\n  description: 'something'\n}"}
+{"level":"error","message":"bad request"}
+{"level":"info","message":"add new product{\n  _id: 5ff458e4e0d5a6406ceea858,\n  name: 'alon',\n  price: 3,\n  amount: 10,\n  description: 'something'\n}"}
+{"level":"info","message":"update product{\n  _id: 5ff458e4e0d5a6406ceea857,\n  name: 'loren',\n  price: 3,\n  amount: 10,\n  description: 'something'\n}"}
