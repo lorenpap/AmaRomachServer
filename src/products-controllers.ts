@@ -1,23 +1,29 @@
 import Product from './products';
 import * as productValidation from './products-validation';
+import {logger} from './logger';
 
 class ProductsControllers {
     async getProducts(ctx) {
-        ctx.body = await Product.find();
+        ctx.ok(await Product.find());
     }
 
     async getProductById(ctx) {
         try {
             const product = await Product.findById(ctx.params.id);
             if (!product) {
-                ctx.throw(400);
+                ctx.badRequest();
+                logger.log('error', 'bad request');
+                return;
             }
-            ctx.body = product;
+            ctx.ok(product);
         } catch (err) {
             if (err.name === 'CastError' || err.name === 'NotFoundError') {
-                ctx.throw(400);
+                ctx.badRequest();
+                logger.log('error', err.message);
+                return;
             }
-            ctx.throw(500);
+            ctx.internalServerError();
+            logger.log('error', err.message);
         }
     }
 
@@ -25,12 +31,15 @@ class ProductsControllers {
         try {
             const validationError = productValidation.joiSchema.validate(ctx.request.body);
             if (validationError.error) {
-                console.log(validationError);
-                ctx.throw(400);
+                ctx.badRequest();
+                logger.log('error', validationError.error.message);
+                return;
             }
-            ctx.body = await new Product(ctx.request.body).save();
+            ctx.ok(await new Product(ctx.request.body).save());
+            logger.log('info', 'add new product' + await new Product(ctx.request.body).save());
         } catch (err) {
-            ctx.throw(400);
+            ctx.badRequest();
+            logger.log('error', err.message);
         }
     }
 
@@ -38,14 +47,20 @@ class ProductsControllers {
         try {
             const product = await Product.findByIdAndRemove(ctx.params.id);
             if (!product) {
-                ctx.throw(400);
+                ctx.badRequest();
+                logger.log('error', 'bad request');
+                return;
             }
-            ctx.body = product;
+            ctx.ok(product);
+            logger.log('info', 'delete product' + product);
         } catch (err) {
             if (err.name === 'CastError' || err.name === 'NotFoundError') {
-                ctx.throw(400);
+                ctx.badRequest();
+                logger.log('error', err);
+                return;
             }
-            ctx.throw(500);
+            ctx.internalServerError();
+            logger.log('error', err);
         }
     }
 
@@ -53,22 +68,29 @@ class ProductsControllers {
         try {
             const validationError = productValidation.joiSchema.validate(ctx.request.body);
             if (validationError.error) {
-                console.log(validationError);
-                ctx.throw(400);
+                ctx.badRequest();
+                logger.log('error', validationError.error);
+                return;
             }
             const product = await Product.findByIdAndUpdate(
                 ctx.params.id,
                 ctx.request.body
             );
             if (!product) {
-                ctx.throw(400);
+                ctx.badRequest();
+                logger.log('error', 'bad request');
+                return;
             }
-            ctx.body = product;
+            ctx.ok(product);
+            logger.log('info', 'update product' + product);
         } catch (err) {
             if (err.name === 'CastError' || err.name === 'NotFoundError') {
-                ctx.throw(404);
+                ctx.badRequest();
+                logger.log('error', err);
+                return ;
             }
-            ctx.throw(500);
+            ctx.internalServerError();
+            logger.log('error', err);
         }
     }
 }

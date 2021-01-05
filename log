@@ -1,0 +1,19 @@
+{"_id":"5ff32856461e0e360499db85","name":"loren","price":3,"amount":10,"description":"something","__v":0}
+{"level":"error","message":"Cast to ObjectId failed for value \"8\" at path \"_id\" for model \"Product\""}
+{"level":"error","message":"Cast to ObjectId failed for value \"8\" at path \"_id\" for model \"Product\""}
+{"_id":"5ff32856461e0e360499db84","name":"loren","price":3,"amount":10,"description":"something","__v":0}
+{"level":"error","message":"bad request"}
+{"level":"info","message":null}
+{"_id":"5ff32856461e0e360499db84","name":"loren","price":3,"amount":10,"description":"something","__v":0}
+{"_original":{"name":"loren"},"details":[{"message":"\"price\" is required","path":["price"],"type":"any.required","context":{"label":"price","key":"price"}}],"level":"error"}
+{"level":"error","message":"bad request"}
+{"level":"info","message":null}
+[{"_id":"5ff311ec6c343e3ad427f0e7","name":"loren","price":3,"amount":10,"description":"something","__v":0},{"_id":"5ff312386c343e3ad427f0e8","name":"loren","price":3,"amount":10,"description":"something","__v":0},{"_id":"5ff319028534b733c836fde7","name":"loren","price":3,"amount":10,"description":"something","__v":0},{"_id":"5ff31e6d505dba30241a08c9","name":"loren","price":3,"amount":10,"description":"something","__v":0},{"_id":"5ff32856461e0e360499db85","name":"loren","price":3,"amount":10,"description":"something","__v":0}]
+{"_original":{"name":"alon"},"details":[{"message":"\"price\" is required","path":["price"],"type":"any.required","context":{"label":"price","key":"price"}}],"level":"error"}
+{"_id":"5ff311ec6c343e3ad427f0e7","name":"loren","price":3,"amount":10,"description":"something","__v":0}
+{"level":"error","message":"bad request"}
+{"level":"error","message":"bad request"}
+{"level":"error","message":"bad request"}
+{"level":"error","message":"bad request"}
+{"level":"error","message":"bad request"}
+{"level":"info","message":"successfully connected to db"}

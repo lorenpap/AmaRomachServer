@@ -16,6 +16,7 @@
     "joi": "^17.3.0",
     "koa": "^2.13.0",
     "koa-bodyparser": "^4.3.0",
+    "koa-respond": "^2.1.0",
     "mongoose": "^5.11.9",
     "node": "^15.4.0",
     "nodemon": "^2.0.4",
