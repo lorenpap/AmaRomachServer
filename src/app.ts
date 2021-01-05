@@ -1,10 +1,10 @@
 import * as Koa from "Koa";
-import {connectionString, port} from "./config";
+import {connectionString, port} from "../config/config";
 import * as mongoose from 'mongoose';
 import router from "./route";
 import * as bodyParser from 'koa-bodyparser';
 import * as respond from 'koa-respond';
-import {logger} from "./logger";
+import {logger} from "../config/logger";
 
 const app = new Koa();
 

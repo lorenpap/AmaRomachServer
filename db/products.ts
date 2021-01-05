@@ -19,5 +19,5 @@ const productSchema = new Schema({
         type: String,
         required: true
     }
-});
+}, {versionKey: false});
 export default mongoose.model('Product', productSchema);

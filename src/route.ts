@@ -1,5 +1,5 @@
 import * as Router from '@koa/router';
-import ProductsControllers from './products-controllers';
+import ProductsControllers from '../db/products-controllers';
 
 const productsControllers = new ProductsControllers();
 
