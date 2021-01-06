@@ -1,52 +1,58 @@
 import Product from './products';
 import * as productValidation from '../validation/products-validation';
 import {logger} from '../middlewares/logger';
+import {errorHandler} from "../middlewares/error-handler";
 
 class ProductsControllers {
     async getProducts(ctx) {
-        ctx.ok(await Product.find().select('-__v'));
+        ctx.ok(await Product.find());
     }
 
-    async getProductById(ctx) {
-        ctx.ok(await Product.findById(ctx.params.id).select('-__v'));
-    }
-
-    async addProduct(ctx) {
-        const validationError = productValidation.addProductSchema.validate(ctx.request.body);
-        if (validationError.error) {
-            ctx.badRequest();
-            logger.log('error', validationError.error.message);
+    async getProductById(ctx, next) {
+        const product = await Product.findById(ctx.params.id);
+        if (!product) {
+            await errorHandler(ctx, next);
             return;
         }
-        ctx.ok(await new Product(ctx.request.body).save());
+        ctx.ok(product);
+    }
+
+    async addProduct(ctx, next) {
+        const product = await new Product(ctx.request.body).save();
+        const validationError = productValidation.productSchema.validate(ctx.request.body);
+        if (validationError.error || !product) {
+            await errorHandler(ctx, next);
+            return;
+        }
+        ctx.ok(product);
         logger.log('info', 'add new product' + await new Product(ctx.request.body).save());
     }
 
-    async deleteProduct(ctx) {
-        const product = await Product.findByIdAndRemove(ctx.params.id).select('-__v');
+
+    async deleteProduct(ctx, next) {
+        const product = await Product.findByIdAndRemove(ctx.params.id);
         if (!product) {
-            ctx.badRequest();
-            logger.log('error', 'bad request');
+            await errorHandler(ctx, next);
             return;
         }
         ctx.ok(product);
         logger.log('info', 'delete product ' + product);
     }
 
-    async updateProduct(ctx) {
+    async updateProduct(ctx, next) {
         const product = await Product.findByIdAndUpdate(
             ctx.params.id,
             ctx.request.body, {new: true}
-        ).select('-__v');
-        const validationError = productValidation.updateProductSchema.validate(ctx.request.body);
+        );
+        const validationError = productValidation.productSchema.validate(ctx.request.body);
         if (!product || validationError.error) {
-            ctx.badRequest();
-            logger.log('error', 'bad request');
+            await errorHandler(ctx, next);
             return;
         }
         ctx.ok(product);
         logger.log('info', 'update product' + product);
     }
+
 }
 
 

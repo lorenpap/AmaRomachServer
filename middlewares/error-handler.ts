@@ -5,12 +5,11 @@ export const errorHandler = async (ctx, next) => {
         await next();
     } catch (err) {
         if (err.name === 'CastError' || err.name === 'NotFoundError') {
-            ctx.badRequest();
+            ctx.throw(400, 'Bad Request');
             logger.log('error', err.message);
             return;
         }
-        ctx.internalServerError();
-        console.log(err.name);
+        ctx.throw(500, 'Internal Server Error');
         logger.log('error', err.message);
     }
 };

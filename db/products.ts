@@ -3,6 +3,7 @@ import * as mongoose from 'mongoose';
 const {Schema} = mongoose;
 
 const productSchema = new Schema({
+    __v: {type: Number, select: false},
     name: {
         type: String,
         required: true

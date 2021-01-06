@@ -7,19 +7,29 @@ import {logger} from "../middlewares/logger";
 import * as config from '../middlewares';
 import {errorHandler} from "../middlewares/error-handler";
 
-const app = new Koa();
+export const app = new Koa();
 
-mongoose.connect(config.default.get('db:connectionString'), {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false
-}).then(() => logger.log('info', 'successfully connected to db')).catch(err => {
+const mongooseOptions = {
+    useNewUrlParser: config.get('db:options:getNewUrlParser'),
+    useUnifiedTopology: config.get('db:options:useUnifiedTopology'),
+    useFindAndModify: config.get('db:options:useFindAndModify')
+};
+mongoose.connect(config.get('db:connectionString'), {
+        useNewUrlParser: mongooseOptions.useNewUrlParser,
+        useUnifiedTopology: mongooseOptions.useUnifiedTopology,
+        useFindAndModify: mongooseOptions.useFindAndModify
+    }
+).then(() => logger.log('info', 'successfully connected to db'), err => {
     app.use(ctx => ctx.internalServerError(err));
-    logger.log('error', 'failed connecting to db');
+    logger.log('error', err.message);
 });
 
-app.use(respond()).use(errorHandler).use(bodyParser()).use(router.routes());
-app.listen(config.default.get('app:port'), () => console.log(`✅  The server is running at http://localhost:${config.default.get('app:port')}/`)
-);
+mongoose.connection.on('error', (e) => {
+    logger.log('error', e.message);
+    app.use(ctx => ctx.internalServerError(e));
+});
 
-export default app;
+
+app.use(respond()).use(errorHandler).use(bodyParser()).use(router.routes());
+app.listen(config.get('app:port'), () => console.log(`✅  The server is running at http://localhost:${config.get('app:port')}/`)
+);
