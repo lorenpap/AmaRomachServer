@@ -4,7 +4,7 @@ export const errorHandler = async (ctx, next) => {
     try {
         await next();
     } catch (err) {
-        if (err.name === 'CastError' || err.name === 'NotFoundError') {
+        if (err.name === 'CastError' || err.name === 'NotFoundError' || err.name === 'BadRequestError') {
             ctx.badRequest();
             logger.log('error', err.message);
             return;

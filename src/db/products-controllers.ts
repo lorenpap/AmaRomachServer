@@ -1,5 +1,4 @@
 import {Product} from './products';
-import * as productValidation from '../validation/products-validation';
 import {logger} from '../logger/logger';
 
 export const getProducts = async (ctx) => {
@@ -16,10 +15,6 @@ export const getProductById = async (ctx) => {
 
 export const addProduct = async (ctx) => {
     const product = await new Product(ctx.request.body).save();
-    const validationError = productValidation.productSchema.validate(ctx.request.body);
-    if (validationError.error || !product) {
-        ctx.throw(400, 'product validation error' + validationError.error.message);
-    }
     if (!product) {
         ctx.throw(400, 'product not found ', ctx.params.id);
     }
@@ -42,10 +37,6 @@ export const updateProduct = async (ctx) => {
         ctx.params.id,
         ctx.request.body, {new: true}
     );
-    const validationError = productValidation.productSchema.validate(ctx.request.body);
-    if (validationError.error) {
-        ctx.throw(400, 'product validation error' + validationError.error.message);
-    }
     if (!product) {
         ctx.throw(400, 'product not found ', ctx.params.id);
     }
