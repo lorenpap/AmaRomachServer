@@ -1,5 +1,4 @@
 import {Product} from './products';
-import {logger} from '../logger/logger';
 
 export const getProducts = async (ctx) => {
     ctx.ok(await Product.find());
@@ -19,7 +18,6 @@ export const addProduct = async (ctx) => {
         ctx.throw(400, 'product not found ', ctx.params.id);
     }
     ctx.ok(product);
-    logger.log('info', 'add new product' + await new Product(ctx.request.body).save());
 };
 
 
@@ -29,7 +27,6 @@ export const deleteProduct = async (ctx) => {
         ctx.throw(400, 'product not found ', ctx.params.id);
     }
     ctx.ok(product);
-    logger.log('info', 'delete product ' + product);
 };
 
 export const updateProduct = async (ctx) => {
@@ -41,7 +38,6 @@ export const updateProduct = async (ctx) => {
         ctx.throw(400, 'product not found ', ctx.params.id);
     }
     ctx.ok(product);
-    logger.log('info', 'update product' + product);
 };
 
 

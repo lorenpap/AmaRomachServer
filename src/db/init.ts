@@ -1,6 +1,6 @@
 import * as mongoose from "mongoose";
 import {ConnectOptions} from "mongoose";
-import {logger} from "../logger/logger";
+import {logger} from "../logger/init";
 import {app} from "../index";
 import * as nconf from 'nconf';
 
