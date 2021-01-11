@@ -12,3 +12,4 @@ router.post('/', validation, ProductsControllers.addProduct);
 router.get('/:id', ProductsControllers.getProductById);
 router.delete('/:id', ProductsControllers.deleteProduct);
 router.put('/:id', partialValidation, ProductsControllers.updateProduct);
+
