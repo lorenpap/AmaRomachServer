@@ -4,16 +4,16 @@ import * as bodyParser from 'koa-bodyparser';
 import * as respond from 'koa-respond';
 import {errorHandler} from "./middlewares/error-handler";
 import *  as nconf from 'nconf';
-import {initDb} from "./db/init";
 import {router} from "./middlewares/route";
 import {log} from "./middlewares/logger";
+import {initDb} from "./db/init";
 
 export const app: Koa = new Koa();
+const port = nconf.get('app:port');
 
-
-app.use(errorHandler).use(log).use(respond()).use(bodyParser()).use(router.routes());
-app.listen(nconf.get('app:port'), () => {
-        console.log(`✅  The server is running at http://localhost:${nconf.get('app:port')}/`);
+app.use(errorHandler).use(respond()).use(bodyParser()).use(router.routes()).use(log);
+app.listen(port, () => {
+        console.log(`✅  The server is running at http://localhost:${port}/`);
         initDb();
     }
 );

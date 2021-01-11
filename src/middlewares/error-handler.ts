@@ -5,11 +5,11 @@ export const errorHandler = async (ctx, next) => {
         await next();
     } catch (err) {
         if (err.name === 'CastError' || err.name === 'NotFoundError' || err.name === 'BadRequestError') {
-            ctx.badRequest();
+            ctx.badRequest(err.message);
             logger.log('error', err.message);
             return;
         }
-        ctx.internalServerError();
+        ctx.internalServerError(err.message);
         logger.log('error', err.message);
     }
 };
