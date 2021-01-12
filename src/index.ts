@@ -11,7 +11,7 @@ import {initDb} from "./db/init";
 export const app: Koa = new Koa();
 const port = nconf.get('app:port');
 
-app.use(errorHandler).use(respond()).use(bodyParser()).use(router.routes()).use(log);
+app.use(errorHandler).use(log).use(respond()).use(bodyParser()).use(router.routes());
 app.listen(port, () => {
         console.log(`✅  The server is running at http://localhost:${port}/`);
         initDb();
