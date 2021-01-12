@@ -1,4 +1,4 @@
-import {logger} from "../logger/init";
+import {logger} from "../../logger/init";
 
 export const log = async (ctx, next) => {
     await next();

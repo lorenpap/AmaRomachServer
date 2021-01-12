@@ -1,4 +1,4 @@
-import {logger} from "../logger/init";
+import {logger} from "../../logger/init";
 
 export const errorHandler = async (ctx, next) => {
     try {

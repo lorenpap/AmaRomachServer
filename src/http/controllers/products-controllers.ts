@@ -1,5 +1,5 @@
-import {Product} from "../models/product";
-import * as queries from "../db/queries";
+import {Product} from "../../models/product";
+import * as queries from "../../db/queries";
 
 export const getProducts = async (ctx, next) => {
     ctx.ok(await queries.findProductsQuery());

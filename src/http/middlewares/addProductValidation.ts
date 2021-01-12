@@ -1,4 +1,4 @@
-import * as productValidation from "../validation/products-validation";
+import * as productValidation from "../../validation/products-validation";
 import {ObjectSchema} from "joi";
 
 const checkValidation = async (schema: ObjectSchema, ctx, next) => {
