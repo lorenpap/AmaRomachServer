@@ -1,10 +1,10 @@
-import {Document} from "mongoose";
+// import {Document} from "mongoose";
 
-export interface Product {
+import {MongooseDocument} from "mongoose";
+
+export interface Product extends MongooseDocument{
     name: string;
     description: string;
     price: number;
     amount: number;
 }
-
-export type DbProduct = Promise<Document<Product>>;
