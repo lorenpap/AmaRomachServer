@@ -1,0 +1,17 @@
+{
+  "app": {
+    "port": 3000
+  },
+  "db": {
+    "connectionString": "mongodb+srv://loren:301098loren@cluster0.i3unz.mongodb.net/AMAROMACH?retryWrites=true&w=majority",
+    "options": {
+      "useNewUrlParser": true,
+      "useUnifiedTopology": true,
+      "useFindAndModify": false
+    }
+  },
+  "logger": {
+    "level": "info",
+    "filename": "C://Users//lorenpap//Documents//army/log"
+  }
+}
