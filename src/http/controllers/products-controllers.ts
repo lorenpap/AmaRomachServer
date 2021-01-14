@@ -1,5 +1,5 @@
 import {Product} from "../../models/product";
-import * as queries from "../../db/queries";
+import * as queries from "../../db/db-queries";
 
 export const getProducts = async (ctx, next) => {
     ctx.ok(await queries.findProductsQuery());
@@ -13,14 +13,14 @@ export const getProductById = async (ctx, next) => {
 };
 
 export const addProduct = async (ctx, next) => {
-    const product: Product = await queries.addProductQuery(ctx.request.body);
+    const product: Product = await queries.addProductQuery(ctx.request.body) as Product;
     ctx.ok(product);
     await next();
 };
 
 
 export const deleteProduct = async (ctx, next) => {
-    const product: Product = await queries.deleteProductQuery(ctx.params.id);
+    const product: Product = await queries.deleteProductQuery(ctx.params.id) as Product;
     ctx.ok(product);
     await next();
 };
@@ -29,7 +29,7 @@ export const updateProduct = async (ctx, next) => {
     const product: Product = await queries.updateProductQuery(
         ctx.params.id,
         ctx.request.body
-    );
+    ) as Product;
     ctx.ok(product);
     await next();
 };

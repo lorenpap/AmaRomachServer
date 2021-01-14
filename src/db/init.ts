@@ -8,7 +8,7 @@ export const initDb = async () => {
         await mongoose.connect(nconf.get('db:connectionString'), nconf.get('db:options') as ConnectOptions);
         logger.log('info', 'successfully connected to db');
     } catch (e) {
-        logger.log(e.message);
+        logger.log('error', e.message);
     }
 
 };

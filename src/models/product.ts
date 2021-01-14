@@ -1,10 +1,16 @@
-// import {Document} from "mongoose";
+import {Document} from "mongoose";
 
-import {MongooseDocument} from "mongoose";
-
-export interface Product extends MongooseDocument{
+export interface Product extends Document {
     name: string;
     description: string;
     price: number;
     amount: number;
+}
+
+export interface BaseProduct {
+    name?: string;
+    description?: string;
+    price?: number;
+    amount?: number;
+    _id?: any;
 }
