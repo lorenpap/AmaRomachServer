@@ -1,5 +1,6 @@
 import {Product} from "../../models/product";
 import * as queries from "../../db/db-queries";
+import {usersProducts} from "../../socket/cache";
 
 export const getProducts = async (ctx, next) => {
     ctx.ok(await queries.findProductsQuery());
@@ -34,4 +35,17 @@ export const updateProduct = async (ctx, next) => {
     await next();
 };
 
-
+export const checkout = async (ctx, next) => {
+    const userId = ctx.request.body.id;
+    for (const product of usersProducts[userId]) {
+        const originalProduct: Product = await queries.findProductByIdQuery(product.productId);
+        const newProductAmount = originalProduct.amount - product.selectedAmount;
+        const updatedProduct: Product = await queries.updateProductQuery(
+            product.productId,
+            {amount: newProductAmount}
+        ) as Product;
+        delete usersProducts[userId];
+        ctx.ok(updatedProduct);
+    }
+    await next();
+};

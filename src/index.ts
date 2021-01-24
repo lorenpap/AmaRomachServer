@@ -12,7 +12,8 @@ import {Server} from "socket.io";
 import * as http from 'http';
 import * as cors from '@koa/cors';
 import {ProductSelectedAmount} from "./models/productAmount";
-import {updateProductAmount} from "./socket/socket-controllers";
+import {getUpdatedProductAmount, updateProductAmount} from "./socket/socket-controllers";
+import {BaseProduct} from "./models/product";
 
 export const app: Koa = new Koa();
 
@@ -31,10 +32,10 @@ io.on('connection', (socket) => {
         console.log('user disconnected');
     });
     socket.on('update product amount', async (productAmount: ProductSelectedAmount) => {
-        await updateProductAmount(socket.id, productAmount);
-    });
-    socket.on('checkout', () => {
-        console.log('checkout');
+        await updateProductAmount(socket.id, productAmount).then(() => {
+            const updatedProduct: BaseProduct = getUpdatedProductAmount(productAmount.productId);
+            socket.broadcast.emit('updatedProduct', updatedProduct);
+        });
     });
 });
 

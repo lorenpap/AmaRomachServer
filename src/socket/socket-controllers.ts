@@ -3,6 +3,9 @@ import {BaseProduct} from "../models/product";
 import {findProductByIdQuery} from "../db/db-queries";
 import {productsAmount, usersProducts} from "./cache";
 
+export const getUpdatedProductAmount = (productId: string) => {
+    return productsAmount.find(product => product._id = productId);
+};
 export const updateProductAmount = async (socketId: string, productAmount: ProductSelectedAmount) => {
     const product: BaseProduct = await findProductByIdQuery(productAmount.productId);
     const userProduct: BaseProduct = {
