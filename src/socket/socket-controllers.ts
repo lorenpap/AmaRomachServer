@@ -1,34 +1,37 @@
 import {ProductSelectedAmount} from "../models/productAmount";
 import {BaseProduct} from "../models/product";
-import {findProductByIdQuery} from "../db/db-queries";
+import {findProductByIdQuery, findProductsQuery} from "../db/db-queries";
 import {productsAmount, usersProducts} from "./cache";
 
-export const getUpdatedProductAmount = (productId: string) => {
-    return productsAmount.find(product => product._id = productId);
+export const getUpdatedProductAmount = (socketId: string, productId: string): BaseProduct => {
+    return productsAmount.find(product => product._id.toString() === productId);
 };
 export const updateProductAmount = async (socketId: string, productAmount: ProductSelectedAmount) => {
     const product: BaseProduct = await findProductByIdQuery(productAmount.productId);
+    const products: BaseProduct[] = await findProductsQuery();
     const userProduct: BaseProduct = {
         _id: productAmount.productId,
         amount: productAmount.selectedAmount
     };
-    updateProductsAmountCache(product.amount, productAmount);
-    updateUsersProductsCache(userProduct, socketId);
+    if (product) {
+        updateUsersProductsCache(userProduct, socketId);
+        updateProductsAmountCache(products);
+    }
 };
 
-const updateProductsAmountCache = (initialAmount: number, productAmount: ProductSelectedAmount) => {
-    const productIndex: number = productsAmount
-        .findIndex(currentProduct => currentProduct._id === productAmount.productId);
-    const updatedProduct: BaseProduct = {
-        _id: productAmount.productId,
-        amount: (productIndex === -1) ? initialAmount - productAmount.selectedAmount :
-            productsAmount[productIndex].amount - productAmount.selectedAmount
-    };
-    productIndex === -1 ? productsAmount.push(updatedProduct) : productsAmount[productIndex] = {
-        _id: updatedProduct._id,
-        amount: updatedProduct.amount
-    };
+const updateProductsAmountCache = (products: BaseProduct[]) => {
+    products.forEach(product => {
+        const index = productsAmount.findIndex(productAmountItem => product._id.toString() === productAmountItem._id.toString());
+        const updatedProduct = {_id: product._id, amount: product.amount};
+        index === -1 ? productsAmount.push(updatedProduct) : productsAmount[index] = updatedProduct;
+    });
+    Object.keys(usersProducts).forEach(key => usersProducts[key].forEach(productAmount => {
+            const index = productsAmount.findIndex(product => product._id.toString() === productAmount.productId);
+            return productsAmount[index].amount -= productAmount.selectedAmount;
+        })
+    );
 };
+
 
 const updateUsersProductsCache = (updatedProduct: BaseProduct, userId: string) => {
     const userProduct = {

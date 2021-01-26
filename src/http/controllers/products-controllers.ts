@@ -1,9 +1,22 @@
 import {Product} from "../../models/product";
 import * as queries from "../../db/db-queries";
-import {usersProducts} from "../../socket/cache";
+import {productsAmount, usersProducts} from "../../socket/cache";
 
 export const getProducts = async (ctx, next) => {
-    ctx.ok(await queries.findProductsQuery());
+    let products = await queries.findProductsQuery();
+    if (productsAmount.length > 0) {
+        products = products.map(dbProduct => {
+            const updatedProduct = productsAmount.find(product => product._id === dbProduct.id);
+            return updatedProduct ? {
+                name: dbProduct.name,
+                description: dbProduct.description,
+                amount: updatedProduct.amount,
+                _id: dbProduct.id,
+                price: dbProduct.price
+            } : dbProduct;
+        });
+    }
+    ctx.ok(products);
     await next();
 };
 
@@ -45,7 +58,7 @@ export const checkout = async (ctx, next) => {
             {amount: newProductAmount}
         ) as Product;
         delete usersProducts[userId];
-        ctx.ok(updatedProduct);
     }
+    ctx.ok(await queries.findProductsQuery());
     await next();
 };

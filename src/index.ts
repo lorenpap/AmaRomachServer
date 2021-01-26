@@ -33,7 +33,7 @@ io.on('connection', (socket) => {
     });
     socket.on('update product amount', async (productAmount: ProductSelectedAmount) => {
         await updateProductAmount(socket.id, productAmount).then(() => {
-            const updatedProduct: BaseProduct = getUpdatedProductAmount(productAmount.productId);
+            const updatedProduct: BaseProduct = getUpdatedProductAmount(socket.id, productAmount.productId);
             socket.broadcast.emit('updatedProduct', updatedProduct);
         });
     });
