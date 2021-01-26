@@ -28,7 +28,8 @@ export const updateProductAmount = async (socketId: string, productAmount: Produ
 
 const updateProductsAmountCache = (products: BaseProduct[]) => {
     products.forEach(product => {
-        const index = productsAmount.findIndex(productAmountItem => product._id.toString() === productAmountItem._id.toString());
+        const index = productsAmount
+            .findIndex(productAmountItem => product._id.toString() === productAmountItem._id.toString());
         const updatedProduct = {_id: product._id, amount: product.amount};
         index === -1 ? productsAmount.push(updatedProduct) : productsAmount[index] = updatedProduct;
     });
