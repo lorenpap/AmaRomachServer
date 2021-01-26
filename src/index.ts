@@ -12,8 +12,7 @@ import {Server} from "socket.io";
 import * as http from 'http';
 import * as cors from '@koa/cors';
 import {ProductSelectedAmount} from "./models/productAmount";
-import {getUpdatedProductAmount, updateProductAmount} from "./socket/socket-controllers";
-import {BaseProduct} from "./models/product";
+import {updateCart} from "./socket/socket-controllers";
 
 export const app: Koa = new Koa();
 
@@ -22,20 +21,17 @@ const options = {
     origin: '*'
 };
 app.use(errorHandler)
-    .use(cors(options)).use(log).use(respond()).use(bodyParser()).use(router.routes()).use(accessControl);
+    .use(log).use(cors(options)).use(respond()).use(bodyParser()).use(router.routes()).use(accessControl);
 const server = http.createServer(app.callback());
 const io = new Server(server);
 
 io.on('connection', (socket) => {
-    console.log('a user connected');
+    console.log('a user connected, id:', socket.id);
     socket.on('disconnect', () => {
-        console.log('user disconnected');
+        console.log('user disconnected, id:', socket.id);
     });
     socket.on('update product amount', async (productAmount: ProductSelectedAmount) => {
-        await updateProductAmount(socket.id, productAmount).then(() => {
-            const updatedProduct: BaseProduct = getUpdatedProductAmount(socket.id, productAmount.productId);
-            socket.broadcast.emit('updatedProduct', updatedProduct);
-        });
+        await updateCart(socket, productAmount);
     });
 });
 

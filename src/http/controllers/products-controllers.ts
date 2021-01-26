@@ -3,23 +3,20 @@ import * as queries from "../../db/db-queries";
 import {productsAmount, usersProducts} from "../../socket/cache";
 
 export const getProducts = async (ctx, next) => {
-    let products = await queries.findProductsQuery();
-    if (productsAmount.length > 0) {
-        products = products.map(dbProduct => {
-            const updatedProduct = productsAmount.find(product => product._id === dbProduct.id);
-            return updatedProduct ? {
-                name: dbProduct.name,
-                description: dbProduct.description,
-                amount: updatedProduct.amount,
-                _id: dbProduct.id,
-                price: dbProduct.price
-            } : dbProduct;
-        });
-    }
-    ctx.ok(products);
+    ctx.products = await queries.findProductsQuery();
     await next();
 };
 
+export const getUpdatedProducts = async (ctx, next) => {
+    let products = ctx.products;
+    products = products.map(dbProduct => {
+        const updatedProduct = productsAmount.find(product =>
+            product._id.toString() === dbProduct._id.toString());
+        return updatedProduct ? {...dbProduct, amount: updatedProduct.amount} : dbProduct;
+    });
+    ctx.ok(products);
+    await next();
+};
 export const getProductById = async (ctx, next) => {
     const product: Product = await queries.findProductByIdQuery(ctx.params.id);
     ctx.ok(product);

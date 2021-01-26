@@ -2,6 +2,13 @@ import {ProductSelectedAmount} from "../models/productAmount";
 import {BaseProduct} from "../models/product";
 import {findProductByIdQuery, findProductsQuery} from "../db/db-queries";
 import {productsAmount, usersProducts} from "./cache";
+import {Socket} from "socket.io";
+
+export const updateCart = async (socket: Socket, productAmount: ProductSelectedAmount) => {
+    await updateProductAmount(socket.id, productAmount);
+    const updatedProduct: BaseProduct = getUpdatedProductAmount(socket.id, productAmount.productId);
+    socket.broadcast.emit('updatedProduct', updatedProduct);
+};
 
 export const getUpdatedProductAmount = (socketId: string, productId: string): BaseProduct => {
     return productsAmount.find(product => product._id.toString() === productId);

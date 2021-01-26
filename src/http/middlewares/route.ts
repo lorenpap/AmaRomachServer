@@ -7,7 +7,7 @@ export const router: Router = new Router({
     prefix: '/products'
 });
 router.use(dbStatus);
-router.get('/', ProductsControllers.getProducts);
+router.get('/', ProductsControllers.getProducts, ProductsControllers.getUpdatedProducts);
 router.post('/', addProductValidation, ProductsControllers.addProduct);
 router.get('/:id', ProductsControllers.getProductById);
 router.delete('/:id', ProductsControllers.deleteProduct);
