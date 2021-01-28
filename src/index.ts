@@ -7,7 +7,6 @@ import *  as nconf from 'nconf';
 import {router} from "./http/middlewares/route";
 import {log} from "./http/middlewares/logger";
 import {initDb} from "./db/init";
-import {accessControl} from "./http/middlewares/access-control";
 import {Server} from "socket.io";
 import * as http from 'http';
 import * as cors from '@koa/cors';
@@ -21,7 +20,7 @@ const options = {
     origin: '*'
 };
 app.use(errorHandler)
-    .use(log).use(cors(options)).use(respond()).use(bodyParser()).use(router.routes()).use(accessControl);
+    .use(log).use(cors(options)).use(respond()).use(bodyParser()).use(router.routes());
 const server = http.createServer(app.callback());
 const io = new Server(server);
 
