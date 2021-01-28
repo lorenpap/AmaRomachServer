@@ -1,6 +1,6 @@
 import {Product} from "../../models/product";
 import * as queries from "../../db/db-queries";
-import {productsAmount, usersProducts} from "../../socket/cache";
+import * as UserCart from '../../socket/cache';
 
 export const getProducts = async (ctx, next) => {
     ctx.products = await queries.findProductsQuery();
@@ -9,10 +9,12 @@ export const getProducts = async (ctx, next) => {
 
 export const getUpdatedProducts = async (ctx, next) => {
     let products = ctx.products;
+    const usersProducts = UserCart.getUsersProducts();
     products = products.map(dbProduct => {
-        const updatedProduct = productsAmount.find(product =>
-            product._id.toString() === dbProduct._id.toString());
-        return updatedProduct ? {...dbProduct, amount: updatedProduct.amount} : dbProduct;
+        let productAmount: number = 0;
+        Object.keys(usersProducts).filter(userId => usersProducts[userId][dbProduct._id.toString()]).forEach(userId =>
+            productAmount += usersProducts[userId][dbProduct._id.toString()]);
+        return productAmount ? {...dbProduct.toObject(), amount: dbProduct.amount - productAmount} : dbProduct;
     });
     ctx.ok(products);
     await next();
@@ -46,11 +48,12 @@ export const updateProduct = async (ctx, next) => {
 };
 
 export const checkout = async (ctx, next) => {
+    const usersProducts = UserCart.getUsersProducts();
     const userId = ctx.request.body.id;
     await Promise.all(
-        usersProducts[userId].map(async product => {
-                await queries.checkoutProductQuery(product, ctx);
-                delete usersProducts[userId];
+        Object.keys(usersProducts[userId]).map(async productId => {
+                await queries.checkoutProductQuery(productId, usersProducts[userId][productId], ctx);
+                UserCart.deleteUserCart(userId);
             }
         ));
     await next();
