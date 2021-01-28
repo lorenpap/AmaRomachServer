@@ -47,15 +47,11 @@ export const updateProduct = async (ctx, next) => {
 
 export const checkout = async (ctx, next) => {
     const userId = ctx.request.body.id;
-    for (const product of usersProducts[userId]) {
-        const originalProduct: Product = await queries.findProductByIdQuery(product.productId);
-        const newProductAmount = originalProduct.amount - product.selectedAmount;
-        const updatedProduct: Product = await queries.updateProductQuery(
-            product.productId,
-            {amount: newProductAmount}
-        ) as Product;
-        delete usersProducts[userId];
-    }
-    ctx.ok(await queries.findProductsQuery());
+    await Promise.all(
+        usersProducts[userId].map(async product => {
+                await queries.checkoutProductQuery(product, ctx);
+                delete usersProducts[userId];
+            }
+        ));
     await next();
 };
