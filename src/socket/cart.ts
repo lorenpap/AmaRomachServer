@@ -9,7 +9,7 @@ export const createUserCart = (userId: string) => {
 };
 
 export const deleteUserCart = (userId: string) => {
-    delete usersProducts[userId];
+    usersProducts[userId] = {};
 };
 
 export const getUpdatedUserCart = async (socketId: string, productId: string): Promise<Partial<Product>> => {
@@ -25,3 +25,13 @@ export const updateUsersProductsCache = (updatedProduct: Partial<Product>, userI
 };
 
 export const getUsersProducts = () => usersProducts;
+
+export const getUpdatedProductsAmount = (products: Partial<Product>[]) => {
+    products = products.map(dbProduct => {
+        let productAmount: number = 0;
+        Object.keys(usersProducts).filter(userId => usersProducts[userId][dbProduct._id]).forEach(userId =>
+            productAmount += usersProducts[userId][dbProduct._id]);
+        return productAmount ? {...dbProduct.toObject(), amount: dbProduct.amount - productAmount} : dbProduct;
+    });
+    return products;
+};

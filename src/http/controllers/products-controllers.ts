@@ -1,24 +1,18 @@
 import {Product} from "../../models/product";
 import * as queries from "../../db/db-queries";
-import * as UserCart from '../../socket/cache';
+import * as UserCart from '../../socket/cart';
+import {getUpdatedProductsAmount} from '../../socket/cart';
 
 export const getProducts = async (ctx, next) => {
     ctx.products = await queries.findProductsQuery();
     await next();
 };
 
-export const getUpdatedProducts = async (ctx, next) => {
-    let products = ctx.products;
-    const usersProducts = UserCart.getUsersProducts();
-    products = products.map(dbProduct => {
-        let productAmount: number = 0;
-        Object.keys(usersProducts).filter(userId => usersProducts[userId][dbProduct._id.toString()]).forEach(userId =>
-            productAmount += usersProducts[userId][dbProduct._id.toString()]);
-        return productAmount ? {...dbProduct.toObject(), amount: dbProduct.amount - productAmount} : dbProduct;
-    });
-    ctx.ok(products);
+export const updateProductsAmount = async (ctx, next) => {
+    ctx.ok(getUpdatedProductsAmount(ctx.products));
     await next();
 };
+
 export const getProductById = async (ctx, next) => {
     const product: Product = await queries.findProductByIdQuery(ctx.params.id);
     ctx.ok(product);
