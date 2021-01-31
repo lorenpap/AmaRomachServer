@@ -27,7 +27,7 @@ export const updateUsersProductsCache = (updatedProduct: Partial<Product>, userI
 export const getUsersProducts = () => usersProducts;
 
 export const getUpdatedProductsAmount = (products: Partial<Product>[]) => {
-    products = products.map(dbProduct => {
+    products = products.filter(dbProduct => dbProduct.amount).map(dbProduct => {
         let productAmount: number = 0;
         Object.keys(usersProducts).filter(userId => usersProducts[userId][dbProduct._id]).forEach(userId =>
             productAmount += usersProducts[userId][dbProduct._id]);

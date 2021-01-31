@@ -2,6 +2,7 @@ import {Product} from "../../models/product";
 import * as queries from "../../db/db-queries";
 import * as UserCart from '../../socket/cart';
 import {getUpdatedProductsAmount} from '../../socket/cart';
+import {isError} from "tslint/lib/error";
 
 export const getProducts = async (ctx, next) => {
     ctx.products = await queries.findProductsQuery();
@@ -46,7 +47,11 @@ export const checkout = async (ctx, next) => {
     const userId = ctx.request.body.id;
     await Promise.all(
         Object.keys(usersProducts[userId]).map(async productId => {
-                await queries.checkoutProductQuery(productId, usersProducts[userId][productId], ctx);
+                const product = await queries.checkoutProductQuery(productId, usersProducts[userId][productId]);
+                if (isError(product)) {
+                    throw (ctx.throw(400, 'checkout error'));
+                }
+                ctx.ok(product);
                 UserCart.deleteUserCart(userId);
             }
         ));

@@ -21,19 +21,18 @@ export const updateProductQuery: (id: string, body: Partial<Product>) =>
     body, {new: true}
 );
 
-export const checkoutProductQuery = async (productId: string, productAmount: number, ctx) => {
+export const checkoutProductQuery = async (productId: string, productAmount: number): Promise<Product | Error> => {
     const session = await mongoose.startSession();
     try {
         const originalProduct: Product = await findProductByIdQuery(productId);
         const newProductAmount = originalProduct.amount - productAmount;
-        const updatedProduct: Product = await updateProductQuery(
+        return await updateProductQuery(
             productId,
             {amount: newProductAmount}
         ) as Product;
-        ctx.ok(updatedProduct);
     } catch (err) {
         await session.abortTransaction();
         session.endSession();
-        throw(ctx.throw(500, err.message));
+        return err;
     }
 };
