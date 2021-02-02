@@ -1,6 +1,5 @@
 import {productModel} from './products';
 import {Product} from "../models/product";
-import * as mongoose from "mongoose";
 import {Document, DocumentQuery} from "mongoose";
 
 export const findProductsQuery = () => productModel.find();
@@ -21,15 +20,21 @@ export const updateProductQuery: (id: string, body: Partial<Product>) =>
     body, {new: true}
 );
 
-export const checkoutProductQuery = async (productId: string, productAmount: number): Promise<Product | Error> => {
-    const session = await mongoose.startSession();
+export const checkoutProductQuery = async (userProducts: Record<string, number>): Promise<Product | Error> => {
+    const session = await productModel.startSession();
     try {
-        const originalProduct: Product = await findProductByIdQuery(productId);
-        const newProductAmount = originalProduct.amount - productAmount;
-        return await updateProductQuery(
-            productId,
-            {amount: newProductAmount}
-        ) as Product;
+        await Promise.all(
+            Object.keys(userProducts).map(async productId => {
+                    const originalProduct: Product = await findProductByIdQuery(productId);
+                    const newProductAmount = originalProduct.amount - userProducts[productId];
+                    const updatedProduct: Product = await updateProductQuery(
+                        productId,
+                        {amount: newProductAmount}) as Product;
+                }
+            ));
+        await session.commitTransaction();
+        session.endSession();
+        return await findProductsQuery();
     } catch (err) {
         await session.abortTransaction();
         session.endSession();

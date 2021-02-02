@@ -45,15 +45,11 @@ export const updateProduct = async (ctx, next) => {
 export const checkout = async (ctx, next) => {
     const usersProducts = UserCart.getUsersProducts();
     const userId = ctx.request.body.id;
-    await Promise.all(
-        Object.keys(usersProducts[userId]).map(async productId => {
-                const product = await queries.checkoutProductQuery(productId, usersProducts[userId][productId]);
-                if (isError(product)) {
-                    throw (ctx.throw(400, 'checkout error'));
-                }
-                ctx.ok(product);
-                UserCart.deleteUserCart(userId);
-            }
-        ));
+    const checkoutResponse = await queries.checkoutProductQuery(usersProducts[userId]);
+    UserCart.deleteUserCart(userId);
+    if (isError(checkoutResponse)) {
+        throw (ctx.throw(500, 'checkout error'));
+    }
+    ctx.ok(checkoutResponse);
     await next();
 };
