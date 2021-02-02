@@ -3,6 +3,7 @@ import * as queries from "../../db/db-queries";
 import * as UserCart from '../../socket/cart';
 import {getUpdatedProductsAmount} from '../../socket/cart';
 import {isError} from "tslint/lib/error";
+import * as jwt from "jsonwebtoken";
 
 export const getProducts = async (ctx, next) => {
     ctx.products = await queries.findProductsQuery();
@@ -44,12 +45,18 @@ export const updateProduct = async (ctx, next) => {
 
 export const checkout = async (ctx, next) => {
     const usersProducts = UserCart.getUsersProducts();
-    const userId = ctx.request.body.id;
-    const checkoutResponse = await queries.checkoutProductQuery(usersProducts[userId]);
-    UserCart.deleteUserCart(userId);
+    const checkoutResponse = await queries.checkoutProductQuery(usersProducts[ctx.token]);
+    UserCart.deleteUserCart(ctx.token);
     if (isError(checkoutResponse)) {
         throw (ctx.throw(500, 'checkout error'));
     }
     ctx.ok(checkoutResponse);
     await next();
+};
+
+export const login = async (ctx, next) => {
+    const token = jwt.sign({username: "ado"}, 'supersecret', {expiresIn: 120});
+    ctx.cookies.set('token', token, {httpOnly: false});
+    ctx.ok('set cookie');
+    next();
 };

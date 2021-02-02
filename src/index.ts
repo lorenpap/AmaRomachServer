@@ -12,13 +12,13 @@ import * as http from 'http';
 import * as cors from '@koa/cors';
 import {ProductSelectedAmount} from "./models/productAmount";
 import {createUserCart, deleteUserCart, updateCart} from "./socket/socket-controllers";
-import * as jwt from 'jsonwebtoken';
 
 export const app: Koa = new Koa();
 
 const port = nconf.get('app:port');
 const options = {
-    origin: '*'
+    origin: '*',
+    credentials: true
 };
 app.use(errorHandler)
     .use(log).use(cors(options)).use(respond()).use(bodyParser()).use(router.routes());
@@ -26,18 +26,16 @@ const server = http.createServer(app.callback());
 const io = new Server(server);
 
 io.on('connection', (socket) => {
-    const token = jwt.sign({username: "ado"}, 'supersecret', {expiresIn: 120});
-    socket.emit('token', token);
 
     console.log('a user connected, id:', socket.id);
-    createUserCart(token);
+    createUserCart(socket.request.headers.cookie);
 
     socket.on('disconnect', () => {
         console.log('user disconnected, id:', socket.id);
-        deleteUserCart(token);
+        deleteUserCart(socket.request.headers.cookie);
     });
     socket.on('update product amount', async (productAmount: ProductSelectedAmount) => {
-        await updateCart(socket, productAmount, token);
+        await updateCart(socket, productAmount, socket.request.headers.cookie);
     });
 });
 

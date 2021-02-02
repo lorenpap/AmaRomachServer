@@ -8,6 +8,7 @@ export const router: Router = new Router({
     prefix: '/products'
 });
 router.use(dbStatus);
+router.post('/login', ProductsControllers.login);
 router.get('/', ProductsControllers.getProducts, ProductsControllers.updateProductsAmount);
 router.post('/', addProductValidation, ProductsControllers.addProduct);
 router.get('/:id', ProductsControllers.getProductById);
