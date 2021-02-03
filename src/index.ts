@@ -11,7 +11,8 @@ import {Server} from "socket.io";
 import * as http from 'http';
 import * as cors from '@koa/cors';
 import {ProductSelectedAmount} from "./models/productAmount";
-import {createUserCart, deleteUserCart, updateCart} from "./socket/socket-controllers";
+import {updateCart} from "./socket/socket-controllers";
+import * as UserCart from "./socket/cart";
 
 export const app: Koa = new Koa();
 
@@ -28,11 +29,11 @@ const io = new Server(server);
 io.on('connection', (socket) => {
 
     console.log('a user connected, id:', socket.id);
-    createUserCart(socket.request.headers.cookie);
+    UserCart.createUserCart(socket.request.headers.cookie);
 
     socket.on('disconnect', () => {
         console.log('user disconnected, id:', socket.id);
-        deleteUserCart(socket.request.headers.cookie);
+        UserCart.deleteUserCart(socket.request.headers.cookie);
     });
     socket.on('update product amount', async (productAmount: ProductSelectedAmount) => {
         await updateCart(socket, productAmount, socket.request.headers.cookie);

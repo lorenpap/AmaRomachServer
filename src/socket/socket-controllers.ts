@@ -3,10 +3,6 @@ import {Product} from "../models/product";
 import * as UserCart from "./cart";
 import {Socket} from "socket.io";
 
-export const createUserCart = (userId: string) => UserCart.createUserCart(userId);
-
-export const deleteUserCart = (userId: string) => UserCart.deleteUserCart(userId);
-
 export const updateCart = async (socket: Socket, productAmount: ProductSelectedAmount, token: string) => {
     const userProduct: Partial<Product> = {
         _id: productAmount.productId,
@@ -17,4 +13,4 @@ export const updateCart = async (socket: Socket, productAmount: ProductSelectedA
     socket.broadcast.emit('updatedProduct', updatedProduct);
 };
 export const getUpdatedProductAmount = async (socketId: string, productId: string): Promise<Partial<Product>> =>
-    UserCart.getUpdatedUserCart(socketId, productId);
+    UserCart.getUserProductAmount(socketId, productId);

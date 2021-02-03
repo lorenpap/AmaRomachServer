@@ -2,7 +2,7 @@ import * as Router from '@koa/router';
 import * as ProductsControllers from '../controllers/products-controllers';
 import {addProductValidation, updateProductValidation} from "./addProductValidation";
 import {dbStatus} from "./dbValidation";
-import {socketValidation} from "../../socket/socket-validation";
+import {socketValidation} from "./socket-validation";
 
 export const router: Router = new Router({
     prefix: '/products'

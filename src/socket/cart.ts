@@ -9,14 +9,14 @@ export const createUserCart = (userId: string) => {
 };
 
 export const deleteUserCart = (userId: string) => {
-    usersProducts[userId] = {};
+    delete usersProducts[userId];
 };
 
-export const getUpdatedUserCart = async (socketId: string, productId: string): Promise<Partial<Product>> => {
+export const getUserProductAmount = async (socketId: string, productId: string): Promise<Partial<Product>> => {
     const product: Product = await findProductByIdQuery(productId);
-    let updatedProductAmount: number = product.amount;
-    Object.keys(usersProducts).filter(userId => usersProducts[userId][productId])
-        .forEach(userId => updatedProductAmount -= usersProducts[userId][productId]);
+    const updatedProductAmount = Object.keys(usersProducts).reduce((acc, curr) => {
+        return acc - usersProducts[curr][productId] || 0;
+    }, product.amount);
     return {_id: productId, amount: updatedProductAmount};
 };
 
@@ -27,11 +27,10 @@ export const updateUsersProductsCache = (updatedProduct: Partial<Product>, userI
 export const getUsersProducts = () => usersProducts;
 
 export const getUpdatedProductsAmount = (products: Partial<Product>[]) => {
-    products = products.filter(dbProduct => dbProduct.amount).map(dbProduct => {
-        let productAmount: number = 0;
-        Object.keys(usersProducts).filter(userId => usersProducts[userId][dbProduct._id]).forEach(userId =>
-            productAmount += usersProducts[userId][dbProduct._id]);
+    return products.filter(dbProduct => dbProduct.amount).map(dbProduct => {
+        const productAmount = Object.keys(usersProducts).reduce((acc, curr) => {
+            return acc + usersProducts[curr][dbProduct._id] || 0;
+        }, 0);
         return productAmount ? {...dbProduct.toObject(), amount: dbProduct.amount - productAmount} : dbProduct;
     });
-    return products;
 };

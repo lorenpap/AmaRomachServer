@@ -27,7 +27,7 @@ export const checkoutProductQuery = async (userProducts: Record<string, number>)
             Object.keys(userProducts).map(async productId => {
                     const originalProduct: Product = await findProductByIdQuery(productId);
                     const newProductAmount = originalProduct.amount - userProducts[productId];
-                    const updatedProduct: Product = await updateProductQuery(
+                    return await updateProductQuery(
                         productId,
                         {amount: newProductAmount}) as Product;
                 }

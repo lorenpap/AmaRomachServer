@@ -57,6 +57,6 @@ export const checkout = async (ctx, next) => {
 export const login = async (ctx, next) => {
     const token = jwt.sign({username: "ado"}, 'supersecret', {expiresIn: 120});
     ctx.cookies.set('token', token, {httpOnly: false});
-    ctx.ok('set cookie');
-    next();
+    ctx.ok(true);
+    await next();
 };
