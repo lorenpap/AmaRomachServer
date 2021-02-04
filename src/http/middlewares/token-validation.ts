@@ -1,6 +1,6 @@
 import * as jwt from 'jsonwebtoken';
 
-export const socketValidation = async (ctx, next) => {
+export const tokenValidation = async (ctx, next) => {
     const token = ctx.cookies.get('token');
     jwt.verify(token, 'supersecret', async (err, decoded) => {
         if (err) {
