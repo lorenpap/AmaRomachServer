@@ -1,6 +1,6 @@
 import {productModel} from './products';
 import {Product} from "../models/product";
-import {Document, DocumentQuery} from "mongoose";
+import {DocumentQuery} from "mongoose";
 
 export const findProductsQuery = () => productModel.find();
 
@@ -22,6 +22,7 @@ export const updateProductQuery: (id: string, body: Partial<Product>) =>
 
 export const checkoutProductQuery = async (userProducts: Record<string, number>): Promise<Product | Error> => {
     const session = await productModel.startSession();
+    session.startTransaction();
     try {
         await Promise.all(
             Object.keys(userProducts).map(async productId => {

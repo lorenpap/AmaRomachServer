@@ -13,6 +13,7 @@ import * as cors from '@koa/cors';
 import {ProductSelectedAmount} from "./models/productAmount";
 import {updateCart} from "./socket/socket-controllers";
 import * as UserCart from "./socket/cart";
+import * as cookieParser from 'socket.io-cookie-parser';
 
 export const app: Koa = new Koa();
 
@@ -24,18 +25,18 @@ app.use(errorHandler)
     .use(log).use(cors(options)).use(respond()).use(bodyParser()).use(router.routes());
 const server = http.createServer(app.callback());
 const io = new Server(server);
+io.use(cookieParser());
 
 io.on('connection', (socket) => {
-
     console.log('a user connected, id:', socket.id);
-    UserCart.createUserCart(socket.request.headers.cookie);
+    UserCart.createUserCart(socket.request.cookies.token);
 
     socket.on('disconnect', () => {
         console.log('user disconnected, id:', socket.id);
-        UserCart.deleteUserCart(socket.request.headers.cookie);
+        UserCart.deleteUserCart(socket.request.cookies.token);
     });
     socket.on('update product amount', async (productAmount: ProductSelectedAmount) => {
-        await updateCart(socket, productAmount, socket.request.headers.cookie);
+        await updateCart(socket, productAmount, socket.request.cookies.token);
     });
 });
 
