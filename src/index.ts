@@ -18,7 +18,6 @@ export const app: Koa = new Koa();
 
 const port = nconf.get('app:port');
 const options = {
-    origin: '*',
     credentials: true
 };
 app.use(errorHandler)

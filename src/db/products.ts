@@ -1,4 +1,5 @@
 import * as mongoose from 'mongoose';
+import {Product} from "../models/product";
 
 const {Schema} = mongoose;
 
@@ -22,4 +23,4 @@ const productSchema = new Schema({
     }
 }, {versionKey: false});
 
-export const productModel = mongoose.model('Products', productSchema);
+export const productModel = mongoose.model<Product>('Products', productSchema);

@@ -8,7 +8,7 @@ export const findProductsQuery = () => productModel.find();
 export const findProductByIdQuery: (id: string) => DocumentQuery<Product, Product> = (id) => productModel.findById(id);
 
 
-export const addProductQuery: (product: Product) => Promise<Document<Product>> = (product) =>
+export const addProductQuery: (product: Product) => Promise<Product> = (product) =>
     new productModel(product).save();
 
 export const deleteProductQuery: (id: string) =>

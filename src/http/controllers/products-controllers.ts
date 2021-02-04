@@ -21,14 +21,14 @@ export const getProductById = async (ctx, next) => {
 };
 
 export const addProduct = async (ctx, next) => {
-    const product: Product = await queries.addProductQuery(ctx.request.body) as Product;
+    const product: Product = await queries.addProductQuery(ctx.request.body);
     ctx.ok(product);
     await next();
 };
 
 
 export const deleteProduct = async (ctx, next) => {
-    const product: Product = await queries.deleteProductQuery(ctx.params.id) as Product;
+    const product: Product = await queries.deleteProductQuery(ctx.params.id);
     ctx.ok(product);
     await next();
 };
@@ -37,7 +37,7 @@ export const updateProduct = async (ctx, next) => {
     const product: Product = await queries.updateProductQuery(
         ctx.params.id,
         ctx.request.body
-    ) as Product;
+    );
     ctx.ok(product);
     await next();
 };
