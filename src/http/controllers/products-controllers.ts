@@ -1,8 +1,16 @@
 import {Product} from "../../models/product";
-import * as queries from "../../db/queries";
+import * as queries from "../../db/db-queries";
+import * as UserCart from '../../socket/cart';
+import {getUpdatedProductsAmount} from '../../socket/cart';
+import * as jwt from "jsonwebtoken";
 
 export const getProducts = async (ctx, next) => {
-    ctx.ok(await queries.findProductsQuery());
+    ctx.products = await queries.findProductsQuery();
+    await next();
+};
+
+export const updateProductsAmount = async (ctx, next) => {
+    ctx.ok(getUpdatedProductsAmount(ctx.products));
     await next();
 };
 
@@ -34,4 +42,20 @@ export const updateProduct = async (ctx, next) => {
     await next();
 };
 
+export const checkout = async (ctx, next) => {
+    const usersProducts = UserCart.getUsersProducts();
+    const checkoutResponse = await queries.checkoutProductQuery(usersProducts[ctx.token]);
+    UserCart.deleteUserCart(ctx.token);
+    if (checkoutResponse instanceof Error) {
+        throw (ctx.throw(500, 'checkout error'));
+    }
+    ctx.ok(checkoutResponse);
+    await next();
+};
 
+export const login = async (ctx, next) => {
+    const token = jwt.sign({username: "ado"}, 'supersecret', {expiresIn: 120});
+    ctx.cookies.set('token', token, {httpOnly: false});
+    ctx.ok(true);
+    await next();
+};

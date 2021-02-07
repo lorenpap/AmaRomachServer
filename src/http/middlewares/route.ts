@@ -1,15 +1,17 @@
 import * as Router from '@koa/router';
 import * as ProductsControllers from '../controllers/products-controllers';
-import {updateProductValidation, addProductValidation} from "./addProductValidation";
+import {addProductValidation, updateProductValidation} from "./addProductValidation";
 import {dbStatus} from "./dbValidation";
+import {tokenValidation} from "./token-validation";
 
 export const router: Router = new Router({
-    prefix: '/Products'
+    prefix: '/products'
 });
 router.use(dbStatus);
-router.get('/', ProductsControllers.getProducts);
+router.post('/login', ProductsControllers.login);
+router.get('/', ProductsControllers.getProducts, ProductsControllers.updateProductsAmount);
 router.post('/', addProductValidation, ProductsControllers.addProduct);
 router.get('/:id', ProductsControllers.getProductById);
 router.delete('/:id', ProductsControllers.deleteProduct);
 router.put('/:id', updateProductValidation, ProductsControllers.updateProduct);
-
+router.post('/checkout', tokenValidation, ProductsControllers.checkout);
