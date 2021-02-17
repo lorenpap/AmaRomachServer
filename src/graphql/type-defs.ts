@@ -7,7 +7,14 @@ type Product {
     description: String!,
     price: Int!,
     _id: ID!
+}
 
+type PartialProduct {
+    name: String,
+    amount: Int,
+    description: String,
+    price: Int,
+    _id: ID
 }
 
 input ProductInput {
@@ -35,4 +42,8 @@ type Mutation {
     login: ID!,
     updateProductAmount(productId: ID, selectedAmount: Int): Product,
     checkout: [Product!]
+},
+
+type Subscription {
+    productUpdated: PartialProduct!
 }`;

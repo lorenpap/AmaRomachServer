@@ -20,7 +20,7 @@ export const updateProductQuery: (id: string, body: Partial<Product>) =>
     body, {new: true}
 );
 
-export const checkoutProductQuery = async (userProducts: Record<string, number>): Promise<Product | Error> => {
+export const checkoutProductQuery = async (userProducts: Record<string, number>): Promise<Product[] | Error> => {
     const session = await productModel.startSession();
     session.startTransaction();
     try {

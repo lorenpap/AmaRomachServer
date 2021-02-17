@@ -16,19 +16,27 @@ import * as jwt from "jsonwebtoken";
 export const app: Koa = new Koa();
 
 const apolloServer = new ApolloServer({
-    typeDefs, resolvers
-    , context: context => {
-        const token = context.ctx.request.header.authorization;
+    typeDefs, resolvers, playground: true,
+    subscriptions: {
+        path: "/graphql",
+        onConnect: async (connectionParams, webSocket, context) => {
+            console.log(`Subscription client connected using Apollo server's built-in SubscriptionServer.`);
+        },
+        onDisconnect: async (webSocket, context) => {
+            console.log(`Subscription client disconnected.`);
+        }
+    },
+    context: context => {
+        const token = context.ctx ? context.ctx.request.header.authorization : '';
         if (token) {
             jwt.verify(token, 'supersecret', async (err, decoded) => {
                 if (err) {
-                    console.log(err);
                     return null;
                 }
             });
             return {token};
         }
-        return null
+        return null;
     }
 });
 
@@ -36,8 +44,9 @@ const port = nconf.get('app:port');
 const options = {
     credentials: true
 };
+
 app.use(errorHandler).use(log).use(cors(options)).use(respond()).use(bodyParser()).use(router.routes());
-// const server = http.createServer(app.callback());
+
 // apolloServer.applyMiddleware({app});
 // const io = new Server(server);
 // io.use(cookieParser());
@@ -55,8 +64,12 @@ app.use(errorHandler).use(log).use(cors(options)).use(respond()).use(bodyParser(
 //     });
 // });
 apolloServer.applyMiddleware({app, cors: false});
-app.listen(port, () => {
-        console.log(`✅  The server is running at http://localhost:${port}${apolloServer.graphqlPath}`);
-        initDb();
-    }
-);
+
+const server =
+    app.listen(port, () => {
+            console.log(`🚀 Subscription endpoint ready at ws://localhost:${port}${apolloServer.subscriptionsPath}`);
+            console.log(`✅  The server is running at http://localhost:${port}${apolloServer.graphqlPath}`);
+            initDb();
+        }
+    );
+apolloServer.installSubscriptionHandlers(server);
