@@ -7,43 +7,35 @@ import {Product} from "../models/product";
 import {PubSub} from 'apollo-server-koa';
 
 const pubsub = new PubSub();
+const trigger = 'PRODUCT_UPDATED';
 
-export const updateProduct = (parent, {product}, context) => {
-    return pubsub.asyncIterator(['PRODUCT_UPDATED']);
-};
+export const updateProduct = () => pubsub.asyncIterator([trigger]);
 export const resolvers = {
 
     Query: {
-        getProducts: (parent, args, context, info) => {
+        getProducts: async (parent, args, context, info) => {
             if (context.token) {
-                return queries.findProductsQuery().then(dbProducts => {
-                    return getUpdatedProductsAmount(dbProducts);
-                });
+                return getUpdatedProductsAmount(await queries.findProductsQuery());
             }
             return null;
         },
-        getProduct: (parent, {_id}, context, info) => context.token ? queries.findProductByIdQuery(_id) : null
+        getProduct: async (parent, {_id}, context, info) => context.token ?
+            await queries.findProductByIdQuery(_id) : null
     },
     Mutation: {
-        addProduct: (parent, {product}, context, info) => {
+        addProduct: async (parent, {product}, context, info) => {
             if (context.token) {
-                return queries.addProductQuery(product).then(newProduct => {
-                    pubsub.publish('PRODUCT_UPDATED', {
-                        productUpdated: newProduct.toObject()
-                    });
-                    return newProduct;
-                });
+                const newProduct = await queries.addProductQuery(product);
+                pubsub.publish(trigger, {productUpdated: newProduct.toObject()});
+                return newProduct;
             }
             return null;
         },
         deleteProduct: async (parent, {_id}, context, info) => {
             if (context.token) {
-                return await queries.deleteProductQuery(_id).then(deletedProduct => {
-                    pubsub.publish('PRODUCT_UPDATED', {
-                        productUpdated: deletedProduct.toObject()
-                    });
-                    return deletedProduct;
-                });
+                const deletedProduct = await queries.deleteProductQuery(_id);
+                pubsub.publish(trigger, {productUpdated: deletedProduct.toObject()});
+                return deletedProduct;
             }
             return null;
         },
@@ -59,27 +51,21 @@ export const resolvers = {
                     amount: selectedAmount
                 };
                 UserCart.updateUsersProductsCache(userProduct, context.token);
-                pubsub.publish('PRODUCT_UPDATED', {
+                pubsub.publish(trigger, {
                     productUpdated: getUpdatedProductAmount(context.token, productId)
                 });
                 return getUpdatedProductAmount(context.token, productId);
             }
         },
-        checkout: (parent, args, context, info) => {
+        checkout: async (parent, args, context, info) => {
             if (context.token) {
                 const usersProducts = UserCart.getUsersProducts();
-                return queries.checkoutProductQuery(usersProducts[context.token]).then(checkoutResponse => {
-                    UserCart.deleteUserCart(context.token);
-                    if (checkoutResponse instanceof Error) {
-                        return null;
-                    }
-                    checkoutResponse.forEach(product => {
-                        pubsub.publish('PRODUCT_UPDATED', {
-                            productUpdated: product.toObject()
-                        });
-                    });
-                    return checkoutResponse;
-                });
+                const checkoutResponse = await queries.checkoutProductQuery(usersProducts[context.token]);
+                UserCart.deleteUserCart(context.token);
+                if (checkoutResponse instanceof Error) {
+                    return null;
+                }
+                return checkoutResponse;
             }
             return null;
         }

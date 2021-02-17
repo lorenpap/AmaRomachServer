@@ -22,5 +22,4 @@ const productSchema = new Schema({
         required: true
     }
 }, {versionKey: false});
-productSchema.set('toObject', {virtuals: true});
 export const productModel = mongoose.model<Product>('Products', productSchema);
