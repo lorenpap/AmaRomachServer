@@ -13,17 +13,17 @@ export const updateProduct = () => pubsub.asyncIterator([trigger]);
 export const resolvers = {
 
     Query: {
-        getProducts: async (parent, args, context, info) => {
+        getProducts: async (_, args, context) => {
             if (context.token) {
                 return getUpdatedProductsAmount(await queries.findProductsQuery());
             }
             return null;
         },
-        getProduct: async (parent, {_id}, context, info) => context.token ?
+        getProduct: async (_, {_id}, context) => context.token ?
             await queries.findProductByIdQuery(_id) : null
     },
     Mutation: {
-        addProduct: async (parent, {product}, context, info) => {
+        addProduct: async (_, {product}, context) => {
             if (context.token) {
                 const newProduct = await queries.addProductQuery(product);
                 pubsub.publish(trigger, {productUpdated: newProduct.toObject()});
@@ -31,7 +31,7 @@ export const resolvers = {
             }
             return null;
         },
-        deleteProduct: async (parent, {_id}, context, info) => {
+        deleteProduct: async (_, {_id}, context) => {
             if (context.token) {
                 const deletedProduct = await queries.deleteProductQuery(_id);
                 pubsub.publish(trigger, {productUpdated: deletedProduct.toObject()});
@@ -44,7 +44,7 @@ export const resolvers = {
             UserCart.createUserCart(token);
             return token;
         },
-        updateProductAmount: (parent, {productId, selectedAmount}, context, info) => {
+        updateProductAmount: (_, {productId, selectedAmount}, context) => {
             if (context.token) {
                 const userProduct: Partial<Product> = {
                     _id: productId,
@@ -57,7 +57,7 @@ export const resolvers = {
                 return getUpdatedProductAmount(context.token, productId);
             }
         },
-        checkout: async (parent, args, context, info) => {
+        checkout: async (_, args, context) => {
             if (context.token) {
                 const usersProducts = UserCart.getUsersProducts();
                 const checkoutResponse = await queries.checkoutProductQuery(usersProducts[context.token]);
