@@ -6,15 +6,7 @@ type Product {
     amount: Int!,
     description: String!,
     price: Int!,
-    _id: ID!
-}
-
-type PartialProduct {
-    name: String,
-    amount: Int,
-    description: String,
-    price: Int,
-    _id: ID
+    id: ID!
 }
 
 input ProductInput {
@@ -33,17 +25,17 @@ input UpdatedProductInput {
 
 type Query {
     getProducts: [Product!],
-    getProduct(_id: ID): Product!
+    getProduct(id: ID): Product!
 }
 
 type Mutation {
     addProduct(product: ProductInput): Product!,
-    deleteProduct(_id: ID): Product!,
+    deleteProduct(id: ID): Product!,
     login: ID!,
-    updateProductAmount(productId: ID, selectedAmount: Int): Product,
+    updateProductAmount(productId: ID, selectedAmount: Int): Product!,
     checkout: [Product!]
 },
 
 type Subscription {
-    productUpdated: PartialProduct!
+    productUpdated: Product!
 }`;

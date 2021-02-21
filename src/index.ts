@@ -12,6 +12,11 @@ import {ApolloServer} from "apollo-server-koa";
 import {resolvers} from "./graphql/resolver";
 import {typeDefs} from "./graphql/type-defs";
 import * as jwt from "jsonwebtoken";
+import {Server} from "socket.io";
+import * as UserCart from "./socket/cart";
+import * as cookieParser from 'socket.io-cookie-parser';
+import {updateCart} from "./socket/socket-controllers";
+import {ProductSelectedAmount} from "./models/productAmount";
 
 export const app: Koa = new Koa();
 
@@ -47,22 +52,21 @@ const options = {
 
 app.use(errorHandler).use(log).use(cors(options)).use(respond()).use(bodyParser()).use(router.routes());
 
-// apolloServer.applyMiddleware({app});
-// const io = new Server(server);
-// io.use(cookieParser());
+const io = new Server(null);
+io.use(cookieParser());
 
-// io.on('connection', (socket) => {
-//     console.log('a user connected, id:', socket.id);
-//     UserCart.createUserCart(socket.request.cookies.token);
+io.on('connection', (socket) => {
+    console.log('a user connected, id:', socket.id);
+    UserCart.createUserCart(socket.request.cookies.token);
 
-//     socket.on('disconnect', () => {
-//         console.log('user disconnected, id:', socket.id);
-//         UserCart.deleteUserCart(socket.request.cookies.token);
-//     });
-//     socket.on('update product amount', async (productAmount: ProductSelectedAmount) => {
-//         await updateCart(socket, productAmount, socket.request.cookies.token);
-//     });
-// });
+    socket.on('disconnect', () => {
+        console.log('user disconnected, id:', socket.id);
+        UserCart.deleteUserCart(socket.request.cookies.token);
+    });
+    socket.on('update product amount', async (productAmount: ProductSelectedAmount) => {
+        await updateCart(socket, productAmount, socket.request.cookies.token);
+    });
+});
 apolloServer.applyMiddleware({app, cors: false});
 
 const server =
