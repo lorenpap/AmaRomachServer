@@ -8,12 +8,12 @@ import {router} from "./http/middlewares/route";
 import {log} from "./http/middlewares/logger";
 import {initDb} from "./db/init";
 import * as cors from '@koa/cors';
-import {ApolloServer} from "apollo-server-koa";
+import {ApolloServer, AuthenticationError} from "apollo-server-koa";
 import {resolvers} from "./graphql/resolver";
 import {typeDefs} from "./graphql/type-defs";
 import * as jwt from "jsonwebtoken";
 import {Server} from "socket.io";
-import * as UserCart from "./socket/cart";
+import * as UserCart from "./utils/cart";
 import * as cookieParser from 'socket.io-cookie-parser';
 import {updateCart} from "./socket/socket-controllers";
 import {ProductSelectedAmount} from "./models/productAmount";
@@ -41,7 +41,7 @@ const apolloServer = new ApolloServer({
             });
             return {token};
         }
-        return null;
+        throw new AuthenticationError('must authenticate');
     }
 });
 

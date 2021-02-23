@@ -1,6 +1,6 @@
 import {ProductSelectedAmount} from "../models/productAmount";
 import {Product} from "../models/product";
-import * as UserCart from "./cart";
+import * as UserCart from "../utils/cart";
 import {Socket} from "socket.io";
 
 export const updateCart = async (socket: Socket, productAmount: ProductSelectedAmount, token: string) => {
