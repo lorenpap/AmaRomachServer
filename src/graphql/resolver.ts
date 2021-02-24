@@ -56,9 +56,7 @@ const checkout = async (_, args, context) => {
 export const resolvers = {
     Product: {
         id: (root) => root._id,
-        amount: (root) => {
-            UserCart.calculateProductAmount(root._id, root.amount);
-        }
+        amount: (root) => UserCart.calculateProductAmount(root._id, root.amount)
     },
     Query: {
         getProducts,
