@@ -36,7 +36,7 @@ const apolloServer = new ApolloServer({
         if (token) {
             jwt.verify(token, 'supersecret', async (err, decoded) => {
                 if (err) {
-                    return null;
+                    throw new AuthenticationError('wrong token');
                 }
             });
             return {token};

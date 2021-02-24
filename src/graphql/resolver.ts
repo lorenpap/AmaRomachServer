@@ -56,10 +56,11 @@ const checkout = async (_, args, context) => {
 export const resolvers = {
     Product: {
         id: (root) => root._id,
-        amount: async (root, args, context) => {
-            const updatedProductAmount =
-                await UserCart.getUserProductAmount(context.token, root.id);
-            return updatedProductAmount.amount;
+        amount: (root) => {
+            const usersProducts = UserCart.getUsersProducts();
+            return usersProducts ? Object.keys(usersProducts).reduce((acc, curr) => {
+                return acc - (usersProducts[curr][root._id] || 0);
+            }, root.amount) : root.amount();
         }
     },
     Query: {
