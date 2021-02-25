@@ -12,12 +12,17 @@ export const deleteUserCart = (userId: string) => {
     delete usersProducts[userId];
 };
 
+export const calculateProductAmount = (productId: string, amount: number) =>
+    Object.keys(usersProducts).reduce((acc, curr) => {
+        return acc - (usersProducts[curr][productId] || 0);
+    }, amount);
+
 export const getUserProductAmount = async (socketId: string, productId: string): Promise<Partial<Product>> => {
     const product: Product = await findProductByIdQuery(productId);
-    const updatedProductAmount = Object.keys(usersProducts).reduce((acc, curr) => {
-        return acc - (usersProducts[curr][productId] || 0);
-    }, product.amount);
-    return {_id: productId, amount: updatedProductAmount};
+    if (usersProducts) {
+        const updatedProductAmount = calculateProductAmount(productId, product.amount);
+        return {_id: productId, amount: updatedProductAmount};
+    }
 };
 
 export const updateUsersProductsCache = (updatedProduct: Partial<Product>, userId: string) => {

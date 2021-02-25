@@ -1,7 +1,7 @@
 import {Product} from "../../models/product";
 import * as queries from "../../db/db-queries";
-import * as UserCart from '../../socket/cart';
-import {getUpdatedProductsAmount} from '../../socket/cart';
+import * as UserCart from '../../utils/cart';
+import {getUpdatedProductsAmount} from '../../utils/cart';
 import * as jwt from "jsonwebtoken";
 
 export const getProducts = async (ctx, next) => {
